@@ -222,6 +222,10 @@ video = cv.VideoCapture('validation.mp4')
 # cascade_src = 'cascade.xml'
 # car_cascade = cv.CascadeClassifier(cascade_src)
 
+cv.namedWindow('frame') #pozicija prozora
+cv.moveWindow('frame',0,0)
+
+
 # Frejmovi iz videa cija se razlika uzima prilikom detekcije pokreta
 first = second = None
 
@@ -250,9 +254,12 @@ while(video.isOpened()):
         continue
     gray2 = cv.absdiff(f, s)
 
-    gray2 = cv.GaussianBlur(gray2, (21, 21), 0)  # probaj sa ili bez ovog
+    gray2 = cv.GaussianBlur(gray2, (21, 21), 0)
     # plt.imshow(img)
     # plt.show()
+
+    cv.imshow('diff',gray2)
+
     # thresh = cv.threshold(gray2, 20, 255, cv.THRESH_BINARY+cv.THRESH_OTSU)[1]
 
     thresh = cv.threshold(gray2, 6, 255, cv.THRESH_BINARY)[1]
@@ -273,7 +280,8 @@ while(video.isOpened()):
     cnts, hier = cv.findContours(thresh.copy(), cv.RETR_EXTERNAL,
                                     cv.CHAIN_APPROX_SIMPLE)
     cv.imshow('thresh', thresh)
-    # plt.show()
+#    cv.namedWindow('thresh')
+#    cv.moveWindow('thresh',0,0)
 
     detected = []
     for c in cnts:
@@ -301,7 +309,7 @@ while(video.isOpened()):
 
         detected.append((x, y, w, h))
     new = []
-    for i in range(len(detected)):
+    for i in range(len(detected)): #delim dva spojena, crno-beli kvadrat kad nije dovoljno simetrican da se podeli
         d = detected[i]
         if d[2] > 140:
             left = thresh[d[1]:d[1]+d[3], d[0]:d[0]+int(d[2]/2)]
